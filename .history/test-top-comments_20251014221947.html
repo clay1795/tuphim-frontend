@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Top Comments API</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #1a1a1a; color: white; }
+        .test-section { margin: 20px 0; padding: 15px; background: #2a2a2a; border-radius: 8px; }
+        .result { background: #333; padding: 10px; margin: 10px 0; border-radius: 4px; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .comment { background: #444; padding: 10px; margin: 5px 0; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Test Top Comments API</h1>
+    
+    <div class="test-section">
+        <h3>Test API Connection</h3>
+        <button onclick="testApiConnection()">Test API Connection</button>
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Top Comments</h3>
+        <button onclick="testTopComments()">Get Top Comments</button>
+        <div id="comments-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Movie Data</h3>
+        <button onclick="testMovieData()">Get Movie Data</button>
+        <div id="movies-result" class="result"></div>
+    </div>
+
+    <script>
+        const API_URL = '/api';
+
+        async function testApiConnection() {
+            const resultDiv = document.getElementById('api-result');
+            try {
+                const response = await fetch(`${API_URL}/comments/top/tieu-diet-ca-map`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `<div class="success">✅ API Connected! Found ${data.data.length} comments</div>`;
+                    console.log('API Response:', data);
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ API Error: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Connection Error: ${error.message}</div>`;
+                console.error('API Error:', error);
+            }
+        }
+
+        async function testTopComments() {
+            const resultDiv = document.getElementById('comments-result');
+            try {
+                const response = await fetch(`${API_URL}/comments/top/tieu-diet-ca-map`);
+                const data = await response.json();
+                
+                if (data.success && data.data.length > 0) {
+                    let html = `<div class="success">✅ Found ${data.data.length} top comments:</div>`;
+                    data.data.forEach(comment => {
+                        html += `
+                            <div class="comment">
+                                <strong>${comment.username}</strong>: ${comment.content}
+                                <br><small>Upvotes: ${comment.upvotes}, Downvotes: ${comment.downvotes}</small>
+                            </div>
+                        `;
+                    });
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ No comments found</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testMovieData() {
+            const resultDiv = document.getElementById('movies-result');
+            try {
+                const response = await fetch(`${API_URL}/mongo-movies/new`);
+                const data = await response.json();
+                
+                if (data.success && data.data.items) {
+                    const movies = data.data.items.slice(0, 5);
+                    let html = `<div class="success">✅ Found ${movies.length} movies:</div>`;
+                    movies.forEach(movie => {
+                        html += `
+                            <div class="comment">
+                                <strong>${movie.name || movie.title}</strong>
+                                <br><small>Slug: ${movie.slug}</small>
+                            </div>
+                        `;
+                    });
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ No movies found</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        // Auto-test on load
+        window.onload = () => {
+            testApiConnection();
+        };
+    </script>
+</body>
+</html>

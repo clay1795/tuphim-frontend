@@ -1,0 +1,25 @@
+/* Global CSS fix for header z-index issue */
+/* Ensure header always stays on top */
+
+/* Target header container specifically */
+div[class*="sticky"][class*="top-0"] {
+  z-index: 9999 !important;
+  position: sticky !important;
+  top: 0 !important;
+}
+
+/* Force movie cards to have lower z-index */
+.group, .animate-fade-in, .relative {
+  z-index: 1 !important;
+}
+
+/* Ensure grid containers don't override header */
+.grid, .movie-card, .movie-item {
+  z-index: 1 !important;
+  position: relative !important;
+}
+
+/* Keep tooltip on top */
+.movie-tooltip {
+  z-index: 2147483647 !important;
+}

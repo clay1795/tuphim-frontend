@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Poster & Avatar</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #1a1a1a; color: white; }
+        .test-section { margin: 20px 0; padding: 15px; background: #2a2a2a; border-radius: 8px; }
+        .result { background: #333; padding: 10px; margin: 10px 0; border-radius: 4px; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .image-test { display: flex; gap: 20px; margin: 20px 0; }
+        .image-container { text-align: center; }
+        .image-container img { border: 2px solid #555; border-radius: 8px; }
+        .comment-test { background: #444; padding: 15px; margin: 10px 0; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Test Poster & Avatar Display</h1>
+    
+    <div class="test-section">
+        <h3>Movie Data Test</h3>
+        <button onclick="testMovieData()">Get Movie Data</button>
+        <div id="movie-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Avatar Generation Test</h3>
+        <button onclick="testAvatarGeneration()">Test Avatar Generation</button>
+        <div id="avatar-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Comment Display Test</h3>
+        <button onclick="testCommentDisplay()">Test Comment Display</button>
+        <div id="comment-result" class="result"></div>
+    </div>
+
+    <script>
+        const API_URL = '/api';
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+            return `<div class="result ${className}">[${timestamp}] ${message}</div>`;
+        }
+
+        async function testMovieData() {
+            const resultDiv = document.getElementById('movie-result');
+            resultDiv.innerHTML = log('🧪 Testing movie data...');
+            
+            try {
+                const response = await fetch(`${API_URL}/mongo-movies/new`);
+                const data = await response.json();
+                
+                if (data.success && data.data.items) {
+                    const movies = data.data.items.slice(0, 3);
+                    let html = log(`✅ Found ${movies.length} movies`, 'success');
+                    
+                    movies.forEach((movie, index) => {
+                        html += `
+                            <div class="image-test">
+                                <div class="image-container">
+                                    <h4>Movie ${index + 1}: ${movie.name}</h4>
+                                    <img src="${movie.thumb_url || movie.poster_url || movie.thumbnail || 'https://via.placeholder.com/100x150/333/fff?text=No+Image'}" 
+                                         alt="${movie.name}" width="100" height="150" 
+                                         onerror="this.src='https://via.placeholder.com/100x150/333/fff?text=Error'">
+                                    <p>Slug: ${movie.slug}</p>
+                                    <p>Thumb: ${movie.thumb_url || 'N/A'}</p>
+                                    <p>Poster: ${movie.poster_url || 'N/A'}</p>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = log('❌ No movie data found', 'error');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = log(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function testAvatarGeneration() {
+            const resultDiv = document.getElementById('avatar-result');
+            const usernames = ['Movie Fan', 'testuser', 'Movie Lover', 'Fan Movie'];
+            
+            let html = log('🧪 Testing avatar generation...');
+            html += '<div class="image-test">';
+            
+            usernames.forEach(username => {
+                const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=007bff&color=fff&size=32&bold=true`;
+                html += `
+                    <div class="image-container">
+                        <h4>${username}</h4>
+                        <img src="${avatarUrl}" alt="${username}" width="32" height="32" 
+                             onerror="this.src='https://via.placeholder.com/32x32/007bff/fff?text=${username.charAt(0)}'">
+                        <p><a href="${avatarUrl}" target="_blank">View URL</a></p>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            resultDiv.innerHTML = html;
+        }
+
+        async function testCommentDisplay() {
+            const resultDiv = document.getElementById('comment-result');
+            resultDiv.innerHTML = log('🧪 Testing comment display...');
+            
+            try {
+                // Get comments
+                const commentResponse = await fetch(`${API_URL}/comments/top/tieu-diet-ca-map`);
+                const commentData = await commentResponse.json();
+                
+                // Get movie data
+                const movieResponse = await fetch(`${API_URL}/mongo-movies/new`);
+                const movieData = await movieResponse.json();
+                
+                if (commentData.success && movieData.success) {
+                    const comments = commentData.data.slice(0, 3);
+                    const movies = movieData.data.items;
+                    
+                    let html = log(`✅ Found ${comments.length} comments`, 'success');
+                    
+                    comments.forEach((comment, index) => {
+                        // Find movie
+                        const movie = movies.find(m => m.slug === comment.movieSlug);
+                        const posterUrl = movie ? (movie.thumb_url || movie.poster_url || movie.thumbnail) : 'https://via.placeholder.com/100x150/333/fff?text=Movie';
+                        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(comment.username)}&background=007bff&color=fff&size=32&bold=true`;
+                        
+                        html += `
+                            <div class="comment-test">
+                                <div class="image-test">
+                                    <div class="image-container">
+                                        <h4>Avatar</h4>
+                                        <img src="${avatarUrl}" alt="${comment.username}" width="32" height="32">
+                                    </div>
+                                    <div class="image-container">
+                                        <h4>Poster</h4>
+                                        <img src="${posterUrl}" alt="Movie" width="100" height="150">
+                                    </div>
+                                </div>
+                                <h4>Comment ${index + 1}</h4>
+                                <p><strong>User:</strong> ${comment.username}</p>
+                                <p><strong>Content:</strong> ${comment.content}</p>
+                                <p><strong>Upvotes:</strong> ${comment.upvotes}</p>
+                                <p><strong>Movie:</strong> ${movie ? movie.name : 'Not found'}</p>
+                            </div>
+                        `;
+                    });
+                    
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = log('❌ Failed to get data', 'error');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = log(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run tests on load
+        window.onload = () => {
+            testMovieData();
+            testAvatarGeneration();
+        };
+    </script>
+</body>
+</html>

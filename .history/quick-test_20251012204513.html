@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick API Test</title>
+    <style>
+        body { font-family: Arial; background: #1a1a1a; color: white; padding: 20px; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 5px; background: #333; }
+        .success { border-left: 4px solid #4ade80; }
+        .error { border-left: 4px solid #f87171; }
+        button { padding: 10px 20px; margin: 5px; background: #dc2626; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🎬 Quick API Test</h1>
+    <button onclick="testAPI()">Test API</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="result">🔄 Testing API...</div>';
+            
+            try {
+                // Test both direct and proxy URLs
+                const urls = [
+                    '/api/mongo-movies/new?page=1&limit=6',  // Proxy
+                    'https://33ss6xpk-3001.asse.devtunnels.ms/api/mongo-movies/new?page=1&limit=6'  // Direct
+                ];
+                
+                for (const url of urls) {
+                    try {
+                        const response = await fetch(url);
+                        const data = await response.json();
+                        
+                        if (data.success && data.data.items) {
+                            resultDiv.innerHTML = `
+                                <div class="result success">
+                                    ✅ API Working!<br>
+                                    URL: ${url}<br>
+                                    Movies: ${data.data.items.length}<br>
+                                    First: ${data.data.items[0].name}
+                                </div>
+                            `;
+                            return;
+                        }
+                    } catch (error) {
+                        resultDiv.innerHTML += `<div class="result error">❌ ${url}: ${error.message}</div>`;
+                    }
+                }
+                
+                resultDiv.innerHTML += '<div class="result error">❌ All URLs failed</div>';
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Auto test on load
+        window.onload = testAPI;
+    </script>
+</body>
+</html>
+
