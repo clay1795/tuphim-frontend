@@ -1,3 +1,0 @@
-@echo off
-echo Dang mo Chrome khong cache (don gian)...
-"C:\Program Files\Google\Chrome\Application\chrome.exe" --disable-cache --disable-background-networking --user-data-dir="%TEMP%\chrome-temp" %*

@@ -1,8 +1,0 @@
-# Production Environment Variables for tuphim.online
-VITE_API_BASE_URL=https://tuphim-backend.onrender.com/api
-VITE_APP_TITLE=TupPhim - Website Xem Phim Trực Tuyến
-VITE_APP_ENV=production
-VITE_DEBUG=false
-VITE_APP_URL=https://www.tuphim.online
-VITE_KKPHIM_API_URL=https://phimapi.com
-VITE_IMAGE_PROXY_URL=https://phimapi.com/image.php

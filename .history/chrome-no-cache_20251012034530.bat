@@ -1,3 +1,0 @@
-@echo off
-echo Dang mo Chrome khong cache...
-"C:\Program Files\Google\Chrome\Application\chrome.exe" --disable-web-security --disable-features=VizDisplayCompositor --disable-extensions --disable-plugins --disable-images --disable-javascript --disable-cache --disable-background-networking --disable-sync --disable-default-apps --disable-background-timer-throttling --disable-renderer-backgrounding --disable-backgrounding-occluded-windows --disable-features=TranslateUI --disable-ipc-flooding-protection --user-data-dir="%TEMP%\chrome-no-cache" %*

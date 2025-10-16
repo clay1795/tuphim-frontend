@@ -1,8 +1,0 @@
-# Dev Tunnels Configuration
-VITE_API_BASE_URL=https://33ss6xpk-3001.asse.devtunnels.ms/api
-VITE_FRONTEND_URL=https://33ss6xpk-5173.asse.devtunnels.ms
-VITE_BACKEND_URL=https://33ss6xpk-3001.asse.devtunnels.ms
-
-# Development Configuration
-VITE_DEV_TUNNELS=true
-VITE_NETWORK_ACCESS=true
