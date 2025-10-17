@@ -335,8 +335,9 @@ const Header = () => {
                 Phim Lẻ
               </Link>
 
+
               <Link 
-                to="/duyet-tim?type=tvshows" 
+                to="/duyet-tim?type=series" 
                 className="text-white hover:text-yellow-400 transition-colors duration-300 font-medium text-sm"
               >
                 TV Shows
@@ -541,8 +542,9 @@ const Header = () => {
                 Phim Lẻ
               </Link>
               
+              
               <Link 
-                to="/duyet-tim?type=tvshows" 
+                to="/duyet-tim?type=series" 
                 className="block text-white hover:text-yellow-400 transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-gray-800"
                 onClick={() => setShowMobileMenu(false)}
               >
