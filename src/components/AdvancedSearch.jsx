@@ -51,9 +51,12 @@ const AdvancedSearch = () => {
   const loadFilterData = async () => {
     try {
       setLoadingFilters(true);
+      const baseUrl = getApiUrl();
+      console.log('Loading filter data from:', baseUrl);
+      
       const [categoriesResponse, countriesResponse] = await Promise.all([
-        fetch('${getApiUrl()}/movies/categories'),
-        fetch('${getApiUrl()}/movies/countries')
+        fetch(`${baseUrl}/movies/categories`),
+        fetch(`${baseUrl}/movies/countries`)
       ]);
       
       const categoriesResult = await categoriesResponse.json();
