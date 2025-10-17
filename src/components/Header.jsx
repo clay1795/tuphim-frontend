@@ -335,12 +335,6 @@ const Header = () => {
                 Phim Lẻ
               </Link>
 
-              <Link 
-                to="/duyet-tim?type=tvshows" 
-                className="text-white hover:text-yellow-400 transition-colors duration-300 font-medium text-sm"
-              >
-                TV Shows
-              </Link>
 
               <Link 
                 to="/duyet-tim?type=hoathinh" 
@@ -541,13 +535,6 @@ const Header = () => {
                 Phim Lẻ
               </Link>
               
-              <Link 
-                to="/duyet-tim?type=tvshows" 
-                className="block text-white hover:text-yellow-400 transition-colors duration-300 font-medium py-2 px-3 rounded-lg hover:bg-gray-800"
-                onClick={() => setShowMobileMenu(false)}
-              >
-                TV Shows
-              </Link>
               
               <Link 
                 to="/duyet-tim?type=hoathinh" 
