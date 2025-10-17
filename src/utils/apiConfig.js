@@ -14,7 +14,7 @@ const getApiBaseUrl = () => {
   
   // Production mode - use production API URL
   if (import.meta.env.PROD) {
-    return 'https://tuphim-backend.onrender.com';
+    return 'https://tuphim-backend.onrender.com/api';
   }
   
   // Check if current origin contains devtunnels (for testing)
