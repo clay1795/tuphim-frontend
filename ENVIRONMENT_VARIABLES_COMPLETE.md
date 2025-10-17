@@ -91,7 +91,7 @@ ALLOWED_ORIGINS = https://tuphim-frontend-xxx.vercel.app
 Copy toàn bộ block này vào Vercel Environment Variables:
 
 ```
-VITE_API_BASE_URL=https://tuphim-backend.onrender.com
+VITE_API_BASE_URL=https://tuphim-backend.onrender.com/api
 VITE_APP_TITLE=TupPhim - Website Xem Phim Trực Tuyến
 VITE_APP_ENV=production
 VITE_DEBUG=false
