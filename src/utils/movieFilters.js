@@ -519,11 +519,15 @@ export const fetchAllMovies = async () => {
   try {
     console.log('Fetching all movies from API...');
     
+    // Import getApiUrl để sử dụng đúng base URL
+    const { getApiUrl } = await import('../utils/apiConfig.js');
+    const baseUrl = getApiUrl();
+    
     // Sử dụng MongoDB API để lấy phim
     const mongoEndpoints = [
-      '/api/mongo-movies/search?keyword=&page=1&limit=1000&sort=modified_time&sortType=desc',
-      '/api/mongo-movies/search?keyword=&page=2&limit=1000&sort=modified_time&sortType=desc',
-      '/api/mongo-movies/search?keyword=&page=3&limit=1000&sort=modified_time&sortType=desc'
+      `${baseUrl}/mongo-movies/search?keyword=&page=1&limit=1000&sort=modified_time&sortType=desc`,
+      `${baseUrl}/mongo-movies/search?keyword=&page=2&limit=1000&sort=modified_time&sortType=desc`,
+      `${baseUrl}/mongo-movies/search?keyword=&page=3&limit=1000&sort=modified_time&sortType=desc`
     ];
     
     let allMovies = [];
@@ -557,8 +561,8 @@ export const fetchAllMovies = async () => {
       console.log('Fetching additional movies from other MongoDB endpoints...');
       
       const additionalEndpoints = [
-        '/api/mongo-movies/search?keyword=&page=2&limit=1000&sort=modified_time&sortType=desc',
-        '/api/mongo-movies/search?keyword=&page=3&limit=1000&sort=modified_time&sortType=desc'
+        `${baseUrl}/mongo-movies/search?keyword=&page=2&limit=1000&sort=modified_time&sortType=desc`,
+        `${baseUrl}/mongo-movies/search?keyword=&page=3&limit=1000&sort=modified_time&sortType=desc`
       ];
       
       for (const endpoint of additionalEndpoints) {
