@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Auth Dev Tunnels</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .warning { color: #fbbf24; }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #2563eb; }
+        button:disabled { background: #6b7280; cursor: not-allowed; }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background: #333;
+            color: white;
+        }
+        .result {
+            background: #333;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔐 Test Authentication - Dev Tunnels vs Localhost</h1>
+    
+    <div class="test-section">
+        <h2>🌐 Environment Detection</h2>
+        <div id="env-info"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔗 API Connection Test</h2>
+        <button onclick="testLocalhost()">Test Localhost (3001)</button>
+        <button onclick="testDevTunnels()">Test Dev Tunnels</button>
+        <button onclick="testFrontendProxy()">Test Frontend Proxy</button>
+        <div id="connection-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>👤 Authentication Test</h2>
+        <div>
+            <input type="email" id="test-email" placeholder="Email" value="test@test.com">
+            <input type="password" id="test-password" placeholder="Password" value="Test123">
+        </div>
+        <button onclick="testLogin('localhost')">Login via Localhost</button>
+        <button onclick="testLogin('devtunnels')">Login via Dev Tunnels</button>
+        <button onclick="testRegister()">Test Register</button>
+        <div id="auth-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Test Results Summary</h2>
+        <div id="summary"></div>
+    </div>
+
+    <script>
+        // Environment detection
+        function updateEnvInfo() {
+            const envInfo = document.getElementById('env-info');
+            const origin = window.location.origin;
+            const isDevTunnels = origin.includes('devtunnels.ms');
+            
+            envInfo.innerHTML = `
+                <div><strong>Current Origin:</strong> ${origin}</div>
+                <div><strong>Is Dev Tunnels:</strong> <span class="${isDevTunnels ? 'success' : 'warning'}">${isDevTunnels ? 'YES' : 'NO'}</span></div>
+                <div><strong>User Agent:</strong> ${navigator.userAgent}</div>
+                <div><strong>Protocol:</strong> ${window.location.protocol}</div>
+            `;
+        }
+
+        // Test API connections
+        async function testLocalhost() {
+            const results = document.getElementById('connection-results');
+            results.innerHTML += '<div class="result">🔄 Testing localhost:3001...</div>';
+            
+            try {
+                const response = await fetch('http://localhost:3001/api/health');
+                const data = await response.json();
+                results.innerHTML += `<div class="result success">✅ Localhost: ${response.status} - ${JSON.stringify(data, null, 2)}</div>`;
+            } catch (error) {
+                results.innerHTML += `<div class="result error">❌ Localhost Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testDevTunnels() {
+            const results = document.getElementById('connection-results');
+            results.innerHTML += '<div class="result">🔄 Testing Dev Tunnels...</div>';
+            
+            try {
+                const response = await fetch('https://33ss6xpk-3001.asse.devtunnels.ms/api/health');
+                const data = await response.json();
+                results.innerHTML += `<div class="result success">✅ Dev Tunnels: ${response.status} - ${JSON.stringify(data, null, 2)}</div>`;
+            } catch (error) {
+                results.innerHTML += `<div class="result error">❌ Dev Tunnels Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testFrontendProxy() {
+            const results = document.getElementById('connection-results');
+            results.innerHTML += '<div class="result">🔄 Testing Frontend Proxy...</div>';
+            
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                results.innerHTML += `<div class="result success">✅ Frontend Proxy: ${response.status} - ${JSON.stringify(data, null, 2)}</div>`;
+            } catch (error) {
+                results.innerHTML += `<div class="result error">❌ Frontend Proxy Error: ${error.message}</div>`;
+            }
+        }
+
+        // Test authentication
+        async function testLogin(type) {
+            const results = document.getElementById('auth-results');
+            const email = document.getElementById('test-email').value;
+            const password = document.getElementById('test-password').value;
+            
+            if (!email || !password) {
+                results.innerHTML += '<div class="result error">❌ Please enter email and password</div>';
+                return;
+            }
+            
+            results.innerHTML += `<div class="result">🔄 Testing login via ${type}...</div>`;
+            
+            try {
+                let url;
+                if (type === 'localhost') {
+                    url = 'http://localhost:3001/api/auth/login';
+                } else if (type === 'devtunnels') {
+                    url = 'https://33ss6xpk-3001.asse.devtunnels.ms/api/auth/login';
+                }
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        identifier: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    results.innerHTML += `<div class="result success">✅ Login via ${type}: SUCCESS - ${data.data.user.email}</div>`;
+                } else {
+                    results.innerHTML += `<div class="result error">❌ Login via ${type}: FAILED - ${data.message || data.error}</div>`;
+                }
+            } catch (error) {
+                results.innerHTML += `<div class="result error">❌ Login via ${type} Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testRegister() {
+            const results = document.getElementById('auth-results');
+            const email = `test${Date.now()}@example.com`;
+            
+            results.innerHTML += '<div class="result">🔄 Testing registration...</div>';
+            
+            try {
+                // Test via frontend proxy (should work for both localhost and devtunnels)
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: 'Test123',
+                        username: `testuser${Date.now()}`,
+                        fullName: 'Test User'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    results.innerHTML += `<div class="result success">✅ Registration: SUCCESS - ${data.data.user.email}</div>`;
+                } else {
+                    results.innerHTML += `<div class="result error">❌ Registration: FAILED - ${data.message || data.error}</div>`;
+                }
+            } catch (error) {
+                results.innerHTML += `<div class="result error">❌ Registration Error: ${error.message}</div>`;
+            }
+        }
+
+        // Initialize
+        updateEnvInfo();
+        
+        // Auto-run connection tests
+        setTimeout(() => {
+            testFrontendProxy();
+        }, 1000);
+    </script>
+</body>
+</html>

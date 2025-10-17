@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Series Grouping</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: white;
+            padding: 20px;
+        }
+        .test-section {
+            background: #222;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .movie-item {
+            background: #333;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid #666;
+        }
+        .series-item {
+            border-left-color: #ff6b6b;
+        }
+        .single-item {
+            border-left-color: #4ecdc4;
+        }
+        button {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #ff5252;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #444;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎬 Test Series Grouping Feature</h1>
+    
+    <div class="test-section">
+        <h2>Test API Endpoints</h2>
+        <button onclick="testSeriesGroupedAPI()">Test Series Grouped API</button>
+        <button onclick="testSeriesDetailsAPI()">Test Series Details API</button>
+        <button onclick="testRegularMoviesAPI()">Test Regular Movies API</button>
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Sample Movies Data</h2>
+        <div id="sample-movies"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Series Grouping Logic Test</h2>
+        <button onclick="testSeriesGroupingLogic()">Test Grouping Logic</button>
+        <div id="grouping-result" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001/api';
+        
+        // Sample movies data for testing
+        const sampleMovies = [
+            { name: "One Punch Man Phần 1", slug: "one-punch-man-1", year: 2015 },
+            { name: "One Punch Man Phần 2", slug: "one-punch-man-2", year: 2019 },
+            { name: "One Punch Man Phần 3", slug: "one-punch-man-3", year: 2024 },
+            { name: "Attack on Titan Season 1", slug: "attack-on-titan-s1", year: 2013 },
+            { name: "Attack on Titan Season 2", slug: "attack-on-titan-s2", year: 2017 },
+            { name: "Attack on Titan Season 3", slug: "attack-on-titan-s3", year: 2019 },
+            { name: "Attack on Titan Season 4", slug: "attack-on-titan-s4", year: 2020 },
+            { name: "The Matrix", slug: "the-matrix", year: 1999 },
+            { name: "Inception", slug: "inception", year: 2010 }
+        ];
+
+        function displaySampleMovies() {
+            const container = document.getElementById('sample-movies');
+            container.innerHTML = sampleMovies.map(movie => 
+                `<div class="movie-item">
+                    <strong>${movie.name}</strong><br>
+                    <small>Slug: ${movie.slug} | Year: ${movie.year}</small>
+                </div>`
+            ).join('');
+        }
+
+        function getSeriesBaseName(movieName) {
+            if (!movieName) return '';
+            
+            return movieName
+                .replace(/\s*(tập|episode|ep|part|phần|season|s)\s*\d+/gi, '')
+                .replace(/\s*(tập|episode|ep|part|phần|season|s)\s*[ivxlcdm]+/gi, '')
+                .replace(/\s*\d+$/g, '')
+                .replace(/\s*-\s*\d+$/g, '')
+                .replace(/\s*\(.*?\)/g, '')
+                .replace(/\s*\[.*?\]/g, '')
+                .replace(/\s*\{.*?\}/g, '')
+                .trim();
+        }
+
+        function getSeriesPartNumber(movieName) {
+            if (!movieName) return 1;
+            
+            const patterns = [
+                /\b(phần|part)\s*(\d+)/i,
+                /\b(season|s)\s*(\d+)/i,
+                /\b(tập|episode|ep)\s*(\d+)/i,
+                /\b(\d+)\s*(phần|part)/i,
+                /\b(\d+)\s*(season|s)/i,
+                /\b(\d+)\s*(tập|episode|ep)/i,
+                /\b(\d+)$/,
+                /-\s*(\d+)$/
+            ];
+            
+            for (const pattern of patterns) {
+                const match = movieName.match(pattern);
+                if (match) {
+                    const number = parseInt(match[2] || match[1]);
+                    if (!isNaN(number) && number > 0) {
+                        return number;
+                    }
+                }
+            }
+            
+            return 1;
+        }
+
+        function isSeriesMovie(movie) {
+            if (!movie) return false;
+            
+            const movieName = (movie.name || '').toLowerCase();
+            const hasSeriesKeywords = movieName.includes('tập') || 
+                                     movieName.includes('season') || 
+                                     movieName.includes('phần') ||
+                                     movieName.includes('series');
+            
+            const hasEpisodePattern = /\b(tập|episode|ep|part|phần|season|s)\s*\d+/i.test(movieName);
+            
+            return hasSeriesKeywords || hasEpisodePattern;
+        }
+
+        async function testSeriesGroupedAPI() {
+            const resultDiv = document.getElementById('api-result');
+            resultDiv.innerHTML = 'Loading...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/mongo-movies/series-grouped?page=1&limit=10`);
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <h3>Series Grouped API Response:</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+
+        async function testSeriesDetailsAPI() {
+            const resultDiv = document.getElementById('api-result');
+            resultDiv.innerHTML = 'Loading...';
+            
+            try {
+                // Test with a sample slug
+                const response = await fetch(`${API_BASE}/mongo-movies/series/one-punch-man-1`);
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <h3>Series Details API Response:</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+
+        async function testRegularMoviesAPI() {
+            const resultDiv = document.getElementById('api-result');
+            resultDiv.innerHTML = 'Loading...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/mongo-movies/new?page=1&limit=10`);
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <h3>Regular Movies API Response:</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+
+        function testSeriesGroupingLogic() {
+            const resultDiv = document.getElementById('grouping-result');
+            
+            const seriesMap = new Map();
+            const singleMovies = [];
+
+            sampleMovies.forEach(movie => {
+                if (isSeriesMovie(movie)) {
+                    const baseName = getSeriesBaseName(movie.name);
+                    const partNumber = getSeriesPartNumber(movie.name);
+                    
+                    if (!seriesMap.has(baseName)) {
+                        seriesMap.set(baseName, {
+                            baseName,
+                            movies: [],
+                            latestMovie: null,
+                            partNumber: 0
+                        });
+                    }
+                    
+                    const series = seriesMap.get(baseName);
+                    series.movies.push({
+                        ...movie,
+                        partNumber
+                    });
+                    
+                    if (partNumber > series.partNumber) {
+                        series.latestMovie = { ...movie, partNumber };
+                        series.partNumber = partNumber;
+                    }
+                } else {
+                    singleMovies.push(movie);
+                }
+            });
+
+            const series = Array.from(seriesMap.values());
+            const displayMovies = [...singleMovies, ...series.map(s => s.latestMovie)];
+
+            resultDiv.innerHTML = `
+                <h3>Series Grouping Results:</h3>
+                <h4>Series Found (${series.length}):</h4>
+                ${series.map(s => `
+                    <div class="movie-item series-item">
+                        <strong>${s.baseName}</strong> (${s.movies.length} parts)<br>
+                        <small>Latest: ${s.latestMovie.name} (Part ${s.partNumber})</small><br>
+                        <small>All parts: ${s.movies.map(m => `${m.name} (${m.partNumber})`).join(', ')}</small>
+                    </div>
+                `).join('')}
+                
+                <h4>Single Movies (${singleMovies.length}):</h4>
+                ${singleMovies.map(movie => `
+                    <div class="movie-item single-item">
+                        <strong>${movie.name}</strong><br>
+                        <small>Slug: ${movie.slug} | Year: ${movie.year}</small>
+                    </div>
+                `).join('')}
+                
+                <h4>Display Movies (${displayMovies.length}):</h4>
+                ${displayMovies.map(movie => `
+                    <div class="movie-item">
+                        <strong>${movie.name}</strong><br>
+                        <small>Slug: ${movie.slug} | Year: ${movie.year}</small>
+                        ${movie.partNumber ? `<br><small style="color: #ff6b6b;">Part ${movie.partNumber} (Latest)</small>` : ''}
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        // Initialize
+        displaySampleMovies();
+    </script>
+</body>
+</html>
