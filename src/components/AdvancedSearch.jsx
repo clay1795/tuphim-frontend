@@ -35,7 +35,7 @@ const AdvancedSearch = () => {
   });
 
   // Static options
-  const years = Array.from({ length: 30 }, (_, i) => 2024 - i);
+  const years = Array.from({ length: 31 }, (_, i) => 2025 - i);
   const types = [
     { value: 'single', label: 'Phim Lẻ' },
     { value: 'series', label: 'Phim Bộ' },
