@@ -157,15 +157,15 @@ const SeriesMovieCard = ({ movie, index = 0 }) => {
           className="block mt-2 sm:mt-3 space-y-1 sm:space-y-2 hover:bg-gray-800/30 p-1.5 sm:p-2 rounded-lg transition-colors duration-300 touch-target"
           onClick={handleMovieClick}
         >
-          {/* Movie Title - Hiển thị tên series gốc */}
+          {/* Movie Title - Hiển thị tên tiếng Việt */}
           <h3 className="text-white font-bold text-sm sm:text-base line-clamp-2 group-hover:text-red-400 transition-colors duration-300 leading-tight">
-            {movie.originalName || movie.name}
+            {movie.name || movie.originalName}
           </h3>
           
           {/* English Title */}
-          {(movie.origin_name || movie.name_en) && (
+          {(movie.origin_name || movie.name_en || movie.originalName) && (
             <h4 className="text-gray-400 text-sm italic line-clamp-1 group-hover:text-gray-300 transition-colors duration-300">
-              {movie.origin_name || movie.name_en}
+              {movie.origin_name || movie.name_en || movie.originalName}
             </h4>
           )}
           
