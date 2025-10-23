@@ -1,51 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import PropTypes from "prop-types";
 import ThemeToggle from "./ThemeToggle";
 import AuthModal from "./AuthModal";
 import { useAuth } from "../context/AuthContextSimple";
-
-// Component Logo linh hoạt
-const Logo = ({ logoImage, logoText = "PhimBro", onImageError }) => {
-  const [imageError, setImageError] = useState(false);
-  
-  const handleImageError = () => {
-    setImageError(true);
-    if (onImageError) {
-      onImageError();
-    }
-  };
-
-  return (
-    <div className="relative min-w-[120px]">
-      {logoImage && !imageError ? (
-        // Logo từ ảnh upload
-        <div className="relative">
-          <img 
-            src={logoImage} 
-            alt="Logo" 
-            className="max-h-16 w-auto rounded-lg shadow-lg"
-            onError={handleImageError}
-          />
-        </div>
-      ) : (
-        // Logo text fallback với gradient
-        <div className="text-3xl font-bold cursor-pointer min-w-[120px]">
-          <span className="bg-gradient-to-r from-cyan-300 via-emerald-300 to-pink-300 bg-clip-text text-transparent font-serif italic">
-            {logoText}
-          </span>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// PropTypes cho Logo component
-Logo.propTypes = {
-  logoImage: PropTypes.string,
-  logoText: PropTypes.string,
-  onImageError: PropTypes.func,
-};
 
 const Header = () => {
   const navigate = useNavigate();
@@ -54,8 +11,6 @@ const Header = () => {
   const [search, setSearch] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHomePage, setIsHomePage] = useState(true);
-  const [logoImage, setLogoImage] = useState("https://www.rophim.mx/images/logo.svg");
-  const [logoText] = useState("PhimBro");
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -105,11 +60,6 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // Function xử lý lỗi logo
-  const handleLogoError = () => {
-    setLogoImage(null); // Chuyển về logo text
-  };
 
   // Function xử lý click logo
   const handleLogoClick = (e) => {
@@ -172,10 +122,6 @@ const Header = () => {
     // Then close modal
     setShowAuthModal(false);
   };
-
-  // Logo được cấu hình trực tiếp trong state ở trên
-  // Để thay đổi logo, chỉnh sửa giá trị logoImage trong useState
-
 
   const handleSearch = () => {
     if (search.trim()) {
@@ -299,7 +245,13 @@ const Header = () => {
           <div className="flex items-center space-x-2 sm:space-x-4 lg:space-x-6">
             {/* Logo */}
             <Link to="/" className="flex items-center" onClick={handleLogoClick}>
-              <Logo logoImage={logoImage} logoText={logoText} onImageError={handleLogoError} />
+              <img 
+                src="https://image.vietnix.vn/wp-content/uploads/2021/10/vietnix-logo.png" 
+                alt="Logo" 
+                className="h-12 w-auto"
+                style={{ maxHeight: '48px', height: '48px', width: 'auto' }}
+                loading="eager"
+              />
             </Link>
 
             {/* Mobile Menu Button */}
@@ -740,7 +692,5 @@ const Header = () => {
     </div>
   );
 };
-
-// Header component không cần PropTypes vì không nhận props từ parent
 
 export default Header;
