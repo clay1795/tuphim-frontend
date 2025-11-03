@@ -287,11 +287,6 @@ function App() {
             <div className="min-h-screen bg-gray-900 transition-colors duration-300">
             <Header />
             <Routes>
-                <Route path="/test" element={<BackendTestSimple />} />
-                <Route path="/test-movie-detail" element={<MovieDetailTest />} />
-                <Route path="/debug-movie/:slug" element={<MovieDetailDebug />} />
-                <Route path="/simple-movie/:slug" element={<MovieDetailSimple />} />
-                <Route path="/search-test" element={<SearchTest />} />
               <Route path="/" element={
                 <>
                   <>
