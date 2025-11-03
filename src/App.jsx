@@ -14,10 +14,6 @@ import MovieSectionCarousel from "./components/MovieSectionCarousel";
 import TopMoviesSection from "./components/TopMoviesSection";
 import Footer from "./components/Footer";
 import ErrorBoundary from "./components/ErrorBoundary";
-import BackendTestSimple from "./components/BackendTestSimple";
-import MovieDetailTest from "./components/MovieDetailTest";
-import MovieDetailDebug from "./components/MovieDetailDebug";
-import MovieDetailSimple from "./components/MovieDetailSimple";
 import UserProfile from "./components/UserProfile";
 import UserWatchlist from "./components/UserWatchlist";
 import UserFavorites from "./components/UserFavorites";
@@ -45,7 +41,6 @@ import SyncPage from "./pages/SyncPage";
 
 // Video Player
 import VideoPlayer from "./pages/VideoPlayer";
-import SearchTest from "./components/SearchTest";
 
 function App() {
   const [movies, setMovies] = useState([]);
