@@ -2,8 +2,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { getApiUrl } from '../utils/apiConfig.js';
 import { useSearchParams } from 'react-router-dom';
 import SeparatedMovieCard from './SeparatedMovieCard';
-import SeriesMovieCard from './SeriesMovieCard';
-import movieGroupingService from '../services/movieGroupingService';
 
 const AdvancedSearch = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -15,7 +13,6 @@ const AdvancedSearch = () => {
   const [searchStats, setSearchStats] = useState({ movies: 0, categories: 0, countries: 0, years: 0 });
   const [searchMode, setSearchMode] = useState('full'); // instant, extended, full
   const [fullDatabaseLoading, setFullDatabaseLoading] = useState(false);
-  const [groupBySeries, setGroupBySeries] = useState(true);
   const searchTimeoutRef = useRef(null);
   
   // Filter data from backend
@@ -660,25 +657,13 @@ const AdvancedSearch = () => {
 
       {/* Results */}
       <div className="container mx-auto px-6 py-8">
-        {/* Results Header with Toggle */}
+        {/* Results Header */}
         {movies.length > 0 && (
           <div className="flex items-center justify-between mb-6">
             <div className="text-white">
               <h2 className="text-xl font-semibold">
-                Kết Quả Tìm Kiếm ({groupBySeries ? movieGroupingService.groupMoviesBySeries(movies).length : movies.length} phim)
+                Kết Quả Tìm Kiếm ({movies.length} phim)
               </h2>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setGroupBySeries(!groupBySeries)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  groupBySeries 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
-              >
-                {groupBySeries ? 'Nhóm theo series' : 'Hiển thị tất cả'}
-              </button>
             </div>
           </div>
         )}

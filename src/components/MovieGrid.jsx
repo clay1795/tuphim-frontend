@@ -2,8 +2,6 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import movieApi from "../services/movieApi";
 import SeparatedMovieCard from "./SeparatedMovieCard";
-import SeriesMovieCard from "./SeriesMovieCard";
-import movieGroupingService from "../services/movieGroupingService";
 
 const MovieGrid = ({ 
   movies = [], 
@@ -11,8 +9,7 @@ const MovieGrid = ({
   showPagination = false, 
   currentPage = 1, 
   totalPages = 1, 
-  onPageChange = () => {},
-  groupBySeries = true // Thêm option để bật/tắt nhóm theo series
+  onPageChange = () => {}
 }) => {
   const formatYear = (year) => {
     if (!year) return '';
@@ -66,45 +63,27 @@ const MovieGrid = ({
     );
   };
 
-  // Nhóm phim theo series nếu được bật
-  const processedMovies = groupBySeries 
-    ? movieGroupingService.groupMoviesBySeries(movies)
-    : movies;
-
   return (
     <div className="bg-gray-900 min-h-screen animate-fade-in">
       {title && (
         <div className="px-3 sm:px-6 py-4 sm:py-6">
           <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-3 text-gradient">{title}</h2>
           <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-red-500 to-yellow-500 rounded-full"></div>
-          {groupBySeries && processedMovies.length !== movies.length && (
-            <p className="text-gray-400 text-sm mt-2">
-              Hiển thị {processedMovies.length} series từ {movies.length} phim
-            </p>
-          )}
         </div>
       )}
       
       <div className="px-3 sm:px-6 pb-6 sm:pb-8">
-        {processedMovies && processedMovies.length > 0 ? (
+        {movies && movies.length > 0 ? (
           <>
             <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 gap-2 sm:gap-3 md:gap-4 lg:gap-6 xl:gap-8">
-              {processedMovies.map((movie, index) => {
+              {movies.map((movie, index) => {
                 console.log(`Rendering movie ${index + 1}:`, movie.name);
                 return (
-                  groupBySeries ? (
-                    <SeriesMovieCard 
-                      key={movie.slug || movie._id}
-                      movie={movie}
-                      index={index}
-                    />
-                  ) : (
-                    <SeparatedMovieCard 
-                      key={movie.slug || movie._id}
-                      movie={movie}
-                      index={index}
-                    />
-                  )
+                  <SeparatedMovieCard 
+                    key={movie.slug || movie._id}
+                    movie={movie}
+                    index={index}
+                  />
                 );
               })}
             </div>

@@ -45,8 +45,6 @@ import SyncPage from "./pages/SyncPage";
 
 // Video Player
 import VideoPlayer from "./pages/VideoPlayer";
-import TestSeriesGrouping from "./components/TestSeriesGrouping";
-import SimpleSeriesTest from "./components/SimpleSeriesTest";
 import SearchTest from "./components/SearchTest";
 
 function App() {
@@ -298,8 +296,6 @@ function App() {
                 <Route path="/test-movie-detail" element={<MovieDetailTest />} />
                 <Route path="/debug-movie/:slug" element={<MovieDetailDebug />} />
                 <Route path="/simple-movie/:slug" element={<MovieDetailSimple />} />
-                <Route path="/test-series-grouping" element={<TestSeriesGrouping />} />
-                <Route path="/simple-series-test" element={<SimpleSeriesTest />} />
                 <Route path="/search-test" element={<SearchTest />} />
               <Route path="/" element={
                 <>

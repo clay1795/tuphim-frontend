@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import movieApi from "../services/movieApi";
-import SeriesPartsSection from "./SeriesPartsSection";
-import movieGroupingService from "../services/movieGroupingService";
 
 const MovieDetail = () => {
   const { slug } = useParams();
@@ -13,7 +11,6 @@ const MovieDetail = () => {
   const [error, setError] = useState(null);
   const [selectedEpisode, setSelectedEpisode] = useState(null);
   const [activeTab, setActiveTab] = useState('episodes');
-  const [seriesParts, setSeriesParts] = useState([]);
 
   useEffect(() => {
     const loadMovieDetail = async () => {
@@ -52,59 +49,6 @@ const MovieDetail = () => {
     }
   }, [slug]);
 
-  // Load series parts when movie is loaded
-  useEffect(() => {
-    const loadSeriesParts = async () => {
-      if (!movie) return;
-      
-      try {
-        console.log('Loading series parts for:', movie.name);
-        
-        // Tạo series key từ movie hiện tại
-        const seriesKey = movieGroupingService.createSeriesKey(movie.name, movie.origin_name);
-        console.log('Series key:', seriesKey);
-        
-        if (!seriesKey) {
-          setSeriesParts([]);
-          return;
-        }
-        
-        // Tìm tất cả phim có cùng series key
-        // Sử dụng API search để tìm các phim liên quan
-        const searchResults = await movieApi.searchMovies(seriesKey, { limit: 50 });
-        console.log('Search results for series:', searchResults);
-        
-        if (searchResults && searchResults.data && Array.isArray(searchResults.data)) {
-          // Lọc các phim có cùng series key
-          const relatedMovies = searchResults.data.filter(m => {
-            const movieSeriesKey = movieGroupingService.createSeriesKey(m.name, m.origin_name);
-            return movieSeriesKey === seriesKey;
-          });
-          
-          // Sắp xếp theo phần số
-          const sortedParts = relatedMovies.sort((a, b) => {
-            const partA = movieGroupingService.extractPartNumber(a.name, a.origin_name);
-            const partB = movieGroupingService.extractPartNumber(b.name, b.origin_name);
-            return partA - partB;
-          });
-          
-          // Thêm thông tin phần vào mỗi movie
-          const partsWithInfo = sortedParts.map(part => ({
-            ...part,
-            partNumber: movieGroupingService.extractPartNumber(part.name, part.origin_name)
-          }));
-          
-          setSeriesParts(partsWithInfo);
-          console.log('Found series parts:', partsWithInfo.length);
-        }
-      } catch (error) {
-        console.error('Error loading series parts:', error);
-        setSeriesParts([]);
-      }
-    };
-    
-    loadSeriesParts();
-  }, [movie]);
 
   const handlePlayEpisode = (episode, serverIndex, episodeIndex) => {
     // Navigate to video player page with episode parameters
@@ -468,14 +412,6 @@ const MovieDetail = () => {
               </div>
 
               {/* Series Parts Section */}
-              {seriesParts.length > 1 && (
-                <div className="mb-8">
-                  <SeriesPartsSection 
-                    seriesParts={seriesParts} 
-                    currentMovieSlug={movie.slug}
-                  />
-                </div>
-              )}
 
               {/* Movie Details */}
               <div className="mb-8">

@@ -2,10 +2,8 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getApiUrl } from "../utils/apiConfig";
 import SeparatedMovieCard from "./SeparatedMovieCard";
-import SeriesMovieCard from "./SeriesMovieCard";
-import movieGroupingService from "../services/movieGroupingService";
 
-const TopMoviesSection = ({ movies: propMovies = [], groupBySeries = true }) => {
+const TopMoviesSection = ({ movies: propMovies = [] }) => {
   const [movies, setMovies] = useState(propMovies);
   const [loading, setLoading] = useState(false);
 
@@ -84,19 +82,14 @@ const TopMoviesSection = ({ movies: propMovies = [], groupBySeries = true }) => 
     );
   };
 
-  // Nhóm phim theo series nếu được bật
-  const processedMovies = groupBySeries 
-    ? movieGroupingService.groupMoviesBySeries(movies)
-    : movies;
-
   return (
     <div className="bg-gray-900 py-6 sm:py-8" data-testid="top-movies-section">
       <div className="container mx-auto px-3 sm:px-6">
         <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">Top 6 Phim Nổi Bật</h2>
         
-        {processedMovies && processedMovies.length > 0 ? (
+        {movies && movies.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
-            {processedMovies.slice(0, 6).map((movie, index) => (
+            {movies.slice(0, 6).map((movie, index) => (
               <div key={movie.slug || movie._id} className="relative">
                 {/* Number badge */}
                 <div className="absolute -top-1 -left-1 sm:-top-2 sm:-left-2 z-20">
@@ -105,17 +98,10 @@ const TopMoviesSection = ({ movies: propMovies = [], groupBySeries = true }) => 
                   </div>
                 </div>
                 
-                {groupBySeries ? (
-                  <SeriesMovieCard 
-                    movie={movie}
-                    index={index}
-                  />
-                ) : (
-                  <SeparatedMovieCard 
-                    movie={movie}
-                    index={index}
-                  />
-                )}
+                <SeparatedMovieCard 
+                  movie={movie}
+                  index={index}
+                />
               </div>
             ))}
           </div>

@@ -1,27 +1,19 @@
 import { Link } from "react-router-dom";
 import movieApi from "../services/movieApi";
 import SeparatedMovieCard from "./SeparatedMovieCard";
-import SeriesMovieCard from "./SeriesMovieCard";
-import movieGroupingService from "../services/movieGroupingService";
 
 const MovieSection = ({ 
   title, 
   movies, 
   linkTo, 
   description = "",
-  showViewAll = true,
-  groupBySeries = true // Thêm option để bật/tắt nhóm theo series
+  showViewAll = true
 }) => {
   // Debug logging
   console.log(`MovieSection "${title}":`, {
     moviesCount: movies?.length || 0,
     sampleMovies: movies?.slice(0, 3).map(m => m.name) || []
   });
-
-  // Nhóm phim theo series nếu được bật
-  const processedMovies = groupBySeries 
-    ? movieGroupingService.groupMoviesBySeries(movies)
-    : movies;
   const formatYear = (year) => {
     if (!year) return '';
     if (typeof year === 'number') return year;
@@ -57,22 +49,14 @@ const MovieSection = ({
           )}
         </div>
         
-        {processedMovies && processedMovies.length > 0 ? (
+        {movies && movies.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-6">
-            {processedMovies.map((movie, index) => (
-              groupBySeries ? (
-                <SeriesMovieCard 
-                  key={movie._id}
-                  movie={movie}
-                  index={index}
-                />
-              ) : (
-                <SeparatedMovieCard 
-                  key={movie._id}
-                  movie={movie}
-                  index={index}
-                />
-              )
+            {movies.map((movie, index) => (
+              <SeparatedMovieCard 
+                key={movie._id}
+                movie={movie}
+                index={index}
+              />
             ))}
           </div>
         ) : (

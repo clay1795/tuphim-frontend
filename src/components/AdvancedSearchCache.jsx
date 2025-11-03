@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import SeparatedMovieCard from './SeparatedMovieCard';
-import SeriesMovieCard from './SeriesMovieCard';
-import movieGroupingService from '../services/movieGroupingService';
 import SkeletonLoader from './SkeletonLoader';
 import LuxuryLoader from './LuxuryLoader';
 import { mongoMovieApi } from '../services/mongoMovieApi';
@@ -16,7 +14,6 @@ const AdvancedSearchCache = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [cacheStats, setCacheStats] = useState({ totalMovies: 0, lastUpdate: null });
   const [showFilters, setShowFilters] = useState(false);
-  const [groupBySeries, setGroupBySeries] = useState(true);
   const searchTimeoutRef = useRef(null);
   
   // Filter data from backend
@@ -463,18 +460,6 @@ const AdvancedSearchCache = () => {
                 Kết Quả Tìm Kiếm
               </h2>
             </div>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setGroupBySeries(!groupBySeries)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  groupBySeries 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
-              >
-                {groupBySeries ? 'Nhóm theo series' : 'Hiển thị tất cả'}
-              </button>
-            </div>
           </div>
 
           {/* Movies Grid */}
@@ -491,7 +476,7 @@ const AdvancedSearchCache = () => {
             </div>
           ) : movies.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-              {(groupBySeries ? movieGroupingService.groupMoviesBySeries(movies) : movies).map((movie, index) => (
+              {movies.map((movie, index) => (
                 <div
                   key={movie._id || movie.id || index}
                   className="transform transition-all duration-300 hover:scale-105"
@@ -500,11 +485,7 @@ const AdvancedSearchCache = () => {
                     animation: 'fadeInUp 0.6s ease-out forwards'
                   }}
                 >
-                  {groupBySeries ? (
-                    <SeriesMovieCard movie={movie} index={index} />
-                  ) : (
-                    <SeparatedMovieCard movie={movie} />
-                  )}
+                  <SeparatedMovieCard movie={movie} />
                 </div>
               ))}
             </div>
