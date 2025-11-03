@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test API Simple</title>
+    <style>
+        body { font-family: Arial; background: #1a1a1a; color: white; padding: 20px; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background: #065f46; }
+        .error { background: #7f1d1d; }
+        .loading { background: #92400e; }
+        button { padding: 10px 20px; margin: 5px; background: #dc2626; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #ef4444; }
+    </style>
+</head>
+<body>
+    <h1>🎬 Test API Connection</h1>
+    
+    <button onclick="testAPI()">Test Backend API</button>
+    <button onclick="testMovies()">Test Movies API</button>
+    <button onclick="testStats()">Test Stats API</button>
+    
+    <div id="results"></div>
+
+    <script>
+        const API_BASE = 'https://33ss6xpk-3001.asse.devtunnels.ms/api';
+        
+        function addResult(message, type = 'success') {
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = message;
+            document.getElementById('results').appendChild(div);
+        }
+        
+        async function testAPI() {
+            addResult('🔄 Testing backend connection...', 'loading');
+            
+            try {
+                const response = await fetch(`${API_BASE}/mongo-movies/stats`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    addResult(`✅ Backend connected! Movies: ${data.data.totalMovies}`, 'success');
+                } else {
+                    addResult(`❌ API Error: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Connection Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testMovies() {
+            addResult('🔄 Testing movies API...', 'loading');
+            
+            try {
+                const response = await fetch(`${API_BASE}/mongo-movies/new?page=1&limit=6`);
+                const data = await response.json();
+                
+                if (data.success && data.data.items) {
+                    const movies = data.data.items;
+                    addResult(`✅ Movies loaded: ${movies.length} movies`, 'success');
+                    
+                    movies.forEach((movie, index) => {
+                        addResult(`${index + 1}. ${movie.name} (${movie.year})`, 'success');
+                    });
+                } else {
+                    addResult('❌ No movies found', 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Movies Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testStats() {
+            addResult('🔄 Testing stats API...', 'loading');
+            
+            try {
+                const response = await fetch(`${API_BASE}/mongo-movies/stats`);
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    const stats = data.data;
+                    addResult('✅ Stats loaded:', 'success');
+                    addResult(`Total Movies: ${stats.totalMovies}`, 'success');
+                    addResult(`Types: ${stats.byType.map(t => `${t._id}: ${t.count}`).join(', ')}`, 'success');
+                    addResult(`Top Years: ${stats.topYears.slice(0, 3).map(y => `${y._id}: ${y.count}`).join(', ')}`, 'success');
+                } else {
+                    addResult('❌ No stats found', 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Stats Error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Auto test on load
+        window.onload = function() {
+            testAPI();
+        };
+    </script>
+</body>
+</html>

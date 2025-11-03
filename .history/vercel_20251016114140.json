@@ -1,0 +1,42 @@
+{
+  "version": 2,
+  "name": "tuphim-frontend",
+  "builds": [
+    {
+      "src": "dist/**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/dist/$1"
+    }
+  ],
+  "env": {
+    "VITE_API_BASE_URL": "https://api.tuphim.online",
+    "VITE_APP_TITLE": "TupPhim - Website Xem Phim Trực Tuyến",
+    "VITE_APP_ENV": "production",
+    "VITE_DEBUG": "false",
+    "VITE_APP_URL": "https://www.tuphim.online"
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ]
+}

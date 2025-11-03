@@ -1,0 +1,5 @@
+# Production Environment Variables
+VITE_API_BASE_URL=https://phimapi.com
+VITE_APP_TITLE=RopPhim - Website Xem Phim
+VITE_APP_ENV=production
+VITE_DEBUG=false

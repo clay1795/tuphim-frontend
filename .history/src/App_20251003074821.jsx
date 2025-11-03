@@ -1,0 +1,369 @@
+import { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Banner from "./components/Banner";
+import Header from "./components/Header";
+import MovieDetailRoPhim from "./components/MovieDetailRoPhim";
+import MovieFeatured from "./components/MovieFeatured";
+import AdvancedSearch from "./components/AdvancedSearch";
+import InterestSuggestions from "./components/InterestSuggestions";
+import TopMovies from "./components/TopMovies";
+import TopComments from "./components/TopComments";
+import MovieSection from "./components/MovieSection";
+import TopMoviesSection from "./components/TopMoviesSection";
+import Footer from "./components/Footer";
+import { MovieProvider } from "./context/MovieDetailContext";
+import { ThemeProvider } from "./context/ThemeContext";
+import movieApi from "./services/movieApi";
+import { filterMoviesByTheme, filterHighQualityMovies, filterNewMovies } from "./utils/movieFilters";
+
+function App() {
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [featuredMovie, setFeaturedMovie] = useState(null);
+
+  const handleFeaturedMovieChange = (movie) => {
+    setFeaturedMovie(movie);
+    console.log('Featured movie changed:', movie);
+  };
+
+  const loadMovies = async (page = 1) => {
+    setLoading(true);
+    try {
+      console.log('Loading new movies for homepage');
+      const data = await movieApi.getNewMovies(page);
+      console.log('Homepage API Response:', data);
+      console.log('API Response keys:', Object.keys(data));
+      
+      // Xử lý dữ liệu từ API - KKPhim API trả về data.items
+      const movieData = data.items || data.data || [];
+      console.log('Movies loaded for homepage:', movieData.length);
+      if (movieData.length > 0) {
+        console.log('Sample movie:', movieData[0]);
+      }
+      
+      // Debug: Kiểm tra cấu trúc dữ liệu
+      if (movieData.length === 0) {
+        console.warn('No movies found in API response');
+        console.log('Full API response structure:', data);
+        
+        // Fallback data nếu API không trả về dữ liệu
+        const fallbackData = [
+          {
+            _id: '1',
+            name: 'Sample Movie 1',
+            slug: 'sample-movie-1',
+            thumb_url: '/src/assets/temp-1.jpeg',
+            year: 2024,
+            quality: 'HD',
+            episode_current: 1,
+            episode_total: 1,
+            category: [{ name: 'Action' }],
+            country: [{ name: 'USA' }],
+            tmdb: { vote_average: 8.5 }
+          },
+          {
+            _id: '2', 
+            name: 'Sample Movie 2',
+            slug: 'sample-movie-2',
+            thumb_url: '/src/assets/temp-1.jpeg',
+            year: 2024,
+            quality: 'FHD',
+            episode_current: 2,
+            episode_total: 10,
+            category: [{ name: 'Drama' }],
+            country: [{ name: 'Korea' }],
+            tmdb: { vote_average: 9.0 }
+          },
+          {
+            _id: '3',
+            name: 'Sample Movie 3',
+            slug: 'sample-movie-3',
+            thumb_url: '/src/assets/temp-1.jpeg',
+            year: 2024,
+            quality: '4K',
+            episode_current: 1,
+            episode_total: 1,
+            category: [{ name: 'Comedy' }],
+            country: [{ name: 'Japan' }],
+            tmdb: { vote_average: 7.8 }
+          },
+          {
+            _id: '4',
+            name: 'Sample Movie 4',
+            slug: 'sample-movie-4',
+            thumb_url: '/src/assets/temp-1.jpeg',
+            year: 2024,
+            quality: 'HD',
+            episode_current: 5,
+            episode_total: 12,
+            category: [{ name: 'Romance' }],
+            country: [{ name: 'China' }],
+            tmdb: { vote_average: 8.2 }
+          }
+        ];
+        
+        console.log('Using fallback data');
+        setMovies(fallbackData);
+        return;
+      }
+      
+      setMovies(movieData);
+    } catch (error) {
+      console.error('Load movies error:', error);
+      // Hiển thị dữ liệu mẫu khi có lỗi API
+      console.log('API Error, using sample data:', error.message);
+      const sampleMovies = [
+        {
+          _id: '1',
+          name: 'Phim mẫu 1',
+          slug: 'phim-mau-1',
+          thumb_url: '/src/assets/temp-1.jpeg',
+          year: '2024',
+          rating: 8.5,
+          quality: 'HD',
+          episode_current: 1,
+          episode_total: 12,
+          category: [{ name: 'Action' }],
+          country: [{ name: 'USA' }],
+          tmdb: { vote_average: 8.5 }
+        },
+        {
+          _id: '2',
+          name: 'Phim mẫu 2',
+          slug: 'phim-mau-2',
+          thumb_url: '/src/assets/temp-1.jpeg',
+          year: '2024',
+          rating: 7.8,
+          quality: 'FHD',
+          episode_current: 5,
+          episode_total: 20,
+          category: [{ name: 'Drama' }],
+          country: [{ name: 'Korea' }],
+          tmdb: { vote_average: 7.8 }
+        },
+        {
+          _id: '3',
+          name: 'Phim mẫu 3',
+          slug: 'phim-mau-3',
+          thumb_url: '/src/assets/temp-1.jpeg',
+          year: '2024',
+          rating: 9.0,
+          quality: '4K',
+          episode_current: 1,
+          episode_total: 1,
+          category: [{ name: 'Comedy' }],
+          country: [{ name: 'Japan' }],
+          tmdb: { vote_average: 9.0 }
+        },
+        {
+          _id: '4',
+          name: 'Phim mẫu 4',
+          slug: 'phim-mau-4',
+          thumb_url: '/src/assets/temp-1.jpeg',
+          year: '2024',
+          rating: 8.2,
+          quality: 'HD',
+          episode_current: 3,
+          episode_total: 16,
+          category: [{ name: 'Romance' }],
+          country: [{ name: 'China' }],
+          tmdb: { vote_average: 8.2 }
+        }
+      ];
+      
+      setMovies(sampleMovies);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    console.log('Movies state updated:', movies.length);
+    if (movies.length > 0) {
+      console.log('First movie:', movies[0]);
+    }
+  }, [movies]);
+
+  // Load movies on component mount
+  useEffect(() => {
+    loadMovies(1);
+  }, []);
+
+  return (
+    <ThemeProvider>
+      <Router>
+        <MovieProvider>
+          <div className="min-h-screen bg-gray-900 transition-colors duration-300">
+            <Routes>
+              <Route path="/" element={
+                <>
+                  <Header />
+                  
+                  <>
+                    {/* Hero Section - Banner phim nổi bật */}
+                    <Banner 
+                      onFeaturedMovieChange={handleFeaturedMovieChange}
+                      featuredMovie={featuredMovie}
+                    />
+                    
+                    {/* Top 6 Phim Nổi Bật */}
+                    {movies.length > 0 ? (
+                      <TopMoviesSection movies={movies.slice(0, 6)} />
+                    ) : (
+                      <div className="text-center py-12">
+                        <div className="text-white text-xl mb-4">Đang tải phim...</div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-2 border-red-600 border-t-transparent mx-auto"></div>
+                      </div>
+                    )}
+                    
+                    {/* Bạn đang quan tâm gì? */}
+                    <InterestSuggestions />
+                    
+                    {/* Top 10 phim bộ hôm nay */}
+                    {movies.length > 0 && <TopMovies 
+                      movies={movies.filter(movie => {
+                        const hasMultipleEpisodes = movie.episode_total && parseInt(movie.episode_total) > 1;
+                        const hasCurrentEpisode = movie.episode_current && parseInt(movie.episode_current) > 1;
+                        const hasSeriesKeywords = movie.name && (
+                          movie.name.toLowerCase().includes('tập') ||
+                          movie.name.toLowerCase().includes('season') ||
+                          movie.name.toLowerCase().includes('phần') ||
+                          movie.name.toLowerCase().includes('hoàn tất')
+                        );
+                        const hasEpisodeInfo = movie.name && (
+                          movie.name.includes('Tập') ||
+                          movie.name.includes('(') && movie.name.includes(')')
+                        );
+                        return hasMultipleEpisodes || hasCurrentEpisode || hasSeriesKeywords || hasEpisodeInfo;
+                      })} 
+                      title="Top 10 phim bộ hôm nay"
+                      type="series"
+                    />}
+                    
+                    {/* Top 10 phim lẻ hôm nay */}
+                    {movies.length > 0 && <TopMovies 
+                      movies={movies.filter(movie => {
+                        const hasSingleEpisode = !movie.episode_total || parseInt(movie.episode_total) === 1;
+                        const hasSingleCurrent = !movie.episode_current || parseInt(movie.episode_current) === 1;
+                        const isNotSeries = !movie.name || (
+                          !movie.name.toLowerCase().includes('tập') &&
+                          !movie.name.toLowerCase().includes('season') &&
+                          !movie.name.toLowerCase().includes('phần') &&
+                          !movie.name.toLowerCase().includes('hoàn tất') &&
+                          !movie.name.includes('Tập') &&
+                          !(movie.name.includes('(') && movie.name.includes(')'))
+                        );
+                        return hasSingleEpisode && hasSingleCurrent && isNotSeries;
+                      })} 
+                      title="Top 10 phim lẻ hôm nay"
+                      type="single"
+                    />}
+                    
+                    {/* Top bình luận */}
+                    <TopComments />
+                    
+                    {/* Phim Điện Ảnh Mới Coóng */}
+                    {movies.length > 0 && <MovieSection 
+                      title="Phim Điện Ảnh Mới Coóng"
+                      description="Những bộ phim điện ảnh mới nhất, chất lượng cao"
+                      movies={filterHighQualityMovies(filterNewMovies(movies)).slice(0, 12)}
+                      linkTo="/phim-de-cu"
+                    />}
+                    
+                    {/* Phim Trung Quốc mới */}
+                    {movies.length > 0 && <MovieSection 
+                      title="Phim Trung Quốc mới"
+                      description="Tuyển tập phim Trung Quốc mới cập nhật"
+                      movies={filterMoviesByTheme(movies, 'chinese').slice(0, 12)}
+                    />}
+                    
+                    {/* Mãn Nhãn với Phim Chiếu Rạp */}
+                    {movies.length > 0 && <MovieSection 
+                      title="Mãn Nhãn với Phim Chiếu Rạp"
+                      description="Những bộ phim chiếu rạp nổi bật hiện đang có"
+                      movies={filterMoviesByTheme(movies, 'cinema').slice(0, 12)}
+                    />}
+                    
+                    {/* Kho Tàng Anime Mới Nhất */}
+                    {movies.length > 0 && <MovieSection 
+                      title="Kho Tàng Anime Mới Nhất"
+                      description="Tuyển tập anime mới nhất, đa dạng thể loại"
+                      movies={(() => {
+                        const animeMovies = filterMoviesByTheme(movies, 'anime');
+                        const japaneseMovies = filterMoviesByTheme(movies, 'japanese');
+                        const animationMovies = movies.filter(movie => {
+                          const category = movie.category?.map(c => c.name?.toLowerCase()).join(' ') || '';
+                          return category.includes('hoạt hình') || category.includes('animation');
+                        });
+                        return animeMovies.length > 0 ? animeMovies : 
+                               japaneseMovies.length > 0 ? japaneseMovies : 
+                               animationMovies.slice(0, 12);
+                      })()}
+                    />}
+                    
+                    {/* Yêu Kiểu Mỹ */}
+                    {movies.length > 0 && <MovieSection 
+                      title="Yêu Kiểu Mỹ"
+                      description="Tuyển tập phim tình cảm của Mỹ"
+                      movies={(() => {
+                        const americanRomance = filterMoviesByTheme(filterMoviesByTheme(movies, 'american'), 'romance');
+                        const americanMovies = filterMoviesByTheme(movies, 'american');
+                        const romanceMovies = filterMoviesByTheme(movies, 'romance');
+                        return americanRomance.length > 0 ? americanRomance : 
+                               americanMovies.length > 0 ? americanMovies : 
+                               romanceMovies.slice(0, 12);
+                      })()}
+                    />}
+                    
+                    {/* Phá Án Kiểu Hàn */}
+                    {movies.length > 0 && <MovieSection 
+                      title="Phá Án Kiểu Hàn"
+                      description="Phim trinh thám Hàn Quốc hấp dẫn"
+                      movies={(() => {
+                        const koreanDetective = filterMoviesByTheme(filterMoviesByTheme(movies, 'korean'), 'detective');
+                        const koreanMovies = filterMoviesByTheme(movies, 'korean');
+                        const detectiveMovies = filterMoviesByTheme(movies, 'detective');
+                        return koreanDetective.length > 0 ? koreanDetective : 
+                               koreanMovies.length > 0 ? koreanMovies : 
+                               detectiveMovies.slice(0, 12);
+                      })()}
+                    />}
+                    
+                    {/* Điện Ảnh Chiều Thứ 7 */}
+                    {movies.length > 0 && <MovieSection 
+                      title="Điện Ảnh Chiều Thứ 7"
+                      description="Các phim đề xuất cho cuối tuần"
+                      movies={filterMoviesByTheme(movies, 'weekend').slice(0, 12)}
+                    />}
+                    
+                    {/* Footer */}
+                    <Footer />
+                  </>
+
+                  {loading && (
+                    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+                      <div className="glass-dark rounded-2xl p-8 flex items-center space-x-4">
+                        <div className="animate-spin rounded-full h-10 w-10 border-2 border-red-600 border-t-transparent"></div>
+                        <span className="text-white text-lg font-medium">Đang tải phim...</span>
+                      </div>
+                    </div>
+                  )}
+                </>
+              } />
+              
+              <Route path="/phim/:slug" element={<MovieDetailRoPhim />} />
+              <Route path="/phim-le" element={<AdvancedSearch />} />
+              <Route path="/phim-bo" element={<AdvancedSearch />} />
+              <Route path="/phim-de-cu" element={<MovieFeatured />} />
+              <Route path="/hoat-hinh" element={<AdvancedSearch />} />
+              <Route path="/tim-kiem" element={<AdvancedSearch />} />
+              <Route path="/duyet-tim" element={<AdvancedSearch />} />
+            </Routes>
+          </div>
+        </MovieProvider>
+      </Router>
+    </ThemeProvider>
+  );
+}
+
+export default App;
