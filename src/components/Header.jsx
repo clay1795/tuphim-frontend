@@ -246,7 +246,7 @@ const Header = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center" onClick={handleLogoClick}>
               <img 
-                src="https://ibb.co/M3qcn82" 
+                src="https://i.imgur.com/2eOwSb0.png" 
                 alt="Logo" 
                 className="h-12 w-auto"
                 style={{ maxHeight: '48px', height: '48px', width: 'auto' }}
