@@ -248,8 +248,8 @@ const Header = () => {
               <img 
                 src="https://i.imgur.com/2eOwSb0.png" 
                 alt="Logo" 
-                className="h-12 w-auto"
-                style={{ maxHeight: '48px', height: '48px', width: 'auto' }}
+                className="h-20 w-auto sm:h-24"
+                style={{ maxHeight: '96px', height: 'auto', width: 'auto' }}
                 loading="eager"
               />
             </Link>
