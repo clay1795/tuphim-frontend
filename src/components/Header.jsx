@@ -246,10 +246,10 @@ const Header = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center" onClick={handleLogoClick}>
               <img 
-                src="https://i.imgur.com/2eOwSb0.png" 
+                src="https://upload.wikimedia.org/wikipedia/commons/4/4e/HUNRE_Logo.png" 
                 alt="Logo" 
-                className="h-20 w-auto sm:h-24"
-                style={{ maxHeight: '96px', height: 'auto', width: 'auto' }}
+                className="h-12 w-auto"
+                style={{ maxHeight: '48px', height: '48px', width: 'auto' }}
                 loading="eager"
               />
             </Link>
