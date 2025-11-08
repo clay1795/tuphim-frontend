@@ -246,7 +246,7 @@ const Header = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center" onClick={handleLogoClick}>
               <img 
-                src="https://image.vietnix.vn/wp-content/uploads/2021/10/vietnix-logo.png" 
+                src="https://ibb.co/M3qcn82" 
                 alt="Logo" 
                 className="h-12 w-auto"
                 style={{ maxHeight: '48px', height: '48px', width: 'auto' }}
